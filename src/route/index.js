@@ -8,6 +8,8 @@ Vue.use(VueRouter)
 //导入page组件
 import Home from '../pages/Home.vue'
 import Login from '../pages/Login.vue'
+import PostList from '../pages/PostList.vue'
+import PostPublish from '../pages/PostPublish.vue'
 
 //创建vueRouter实例
 const Router = new VueRouter({
@@ -15,7 +17,19 @@ const Router = new VueRouter({
     {
       path: '/',
       component: Home,
-      name: 'home'
+
+      children: [
+        {
+          path: '/',
+          component: PostList,
+          name: 'postlist'
+        },
+        {
+          path: '/post-publish',
+          component: PostPublish,
+          name: 'postpublish'
+        }
+      ]
     },
     {
       path: '/login',
@@ -23,5 +37,15 @@ const Router = new VueRouter({
       name: 'login'
     }
   ]
+})
+
+//创建路由守卫
+Router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  if (to.path != '/login' && !token) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 export default Router
